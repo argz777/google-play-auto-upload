@@ -1,5 +1,5 @@
 # google-play-auto-upload
-Workflow that automatically builds, generate aab, and uploads it to your Google Play Console
+Workflow that automatically builds, generate aab, adds tags, creates release, and uploads it to your Google Play Console.
 
 # Pre-requisite
 1. Have a Google Play Console account
