@@ -1,0 +1,83 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    #1
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    #2
+    - name: Build with Gradle
+      run: ./gradlew clean
+
+    #3 A
+    - name: Build Release apk
+      run: ./gradlew assembleRelease
+
+    #3 B
+    - name: Build Release bundle
+      run: ./gradlew bundleRelease
+
+    #4
+    - name: Sign App
+      uses: r0adkll/sign-android-release@v1
+      id: sign_app
+      with:
+        releaseDirectory: app/build/outputs/bundle/release/
+        signingKeyBase64: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+        alias: ${{ secrets.SIGNING_KEY_ALIAS }}
+        keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
+        keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+           
+    #5
+    - name: Upload Release Build to Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+         name: release-artifacts
+         path: ${{steps.sign_app.outputs.signedReleaseFile}}
+
+    #5
+    - name: Generate release tag
+      id: tag
+      run: |
+        echo "::set-output name=release_tag::UserBuild_$(date +"%Y.%m.%d_%H-%M")"
+        
+    #6      
+    - name: Create Github Release
+      uses: softprops/action-gh-release@v1
+      with:
+         tag_name: ${{ steps.tag.outputs.release_tag }}
+         generate_release_notes: true
+         prerelease: false
+         files: |
+           ${{ steps.sign_app.outputs.signedReleaseFile }}
+
+    #7
+    - name: Upload AAB Release to Google Play Console
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+        packageName: com.user.app
+        releaseFiles: app/build/outputs/bundle/release/app-release.aab
+        track: production
+        status: inProgress
+        inAppUpdatePriority: 2
+        userFraction: 0.33
