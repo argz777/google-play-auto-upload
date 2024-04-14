@@ -1,5 +1,9 @@
 # google-play-auto-upload
-Workflow that automatically builds, generate aab, adds tags, creates release, and uploads it to your Google Play Console.
+Workflow that triggers upon push to master branch:
+1. Cleans and Builds app APK and AAB
+2. Signs APK / AAB
+3. Uploads APK / AAB to Firebase App Distribution for testers
+4. Uploads APK / AAB to Google Play Console for production
 
 # Pre-requisite
 1. Have a Google Play Console account
@@ -20,3 +24,4 @@ Workflow that automatically builds, generate aab, adds tags, creates release, an
 2. Make sure to read through:
 - [r0adkll/upload-google-play](https://github.com/r0adkll/upload-google-play) repository for reference
 - [r0adkll/sign-android-release](https://github.com/r0adkll/sign-android-release) repository for reference
+- [wzieba/Firebase-Distribution-Github-Action](https://github.com/wzieba/Firebase-Distribution-Github-Action) repository for reference
