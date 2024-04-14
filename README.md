@@ -2,8 +2,9 @@
 Workflow that triggers upon push to master branch:
 1. Cleans and Builds app APK and AAB
 2. Signs APK / AAB
-3. Uploads APK / AAB to Firebase App Distribution for testers
-4. Uploads APK / AAB to Google Play Console for production
+3. Creates a release artifact with tag
+4. Uploads APK / AAB to Firebase App Distribution for testers
+5. Uploads APK / AAB to Google Play Console for production
 
 # Pre-requisite
 1. Have a Google Play Console account
